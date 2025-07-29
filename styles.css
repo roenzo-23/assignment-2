@@ -23,6 +23,15 @@ html, body {
   overflow-x: hidden;
   width: 100vw;
   max-width: 100vw;
+  font-size: 16px;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
 #background-animation {
@@ -90,7 +99,7 @@ html, body {
 }
 
 #main-content {
-  margin-top: 80px;
+  margin-top: 5.5rem;
   min-height: 80vh;
   z-index: 1;
   position: relative;
@@ -100,7 +109,7 @@ html, body {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 80rem;
   margin: 0 auto;
   padding: 0 1.5rem;
   box-sizing: border-box;
@@ -134,11 +143,11 @@ html, body {
 }
 .card {
   background: var(--color-card);
-  border-radius: 18px;
+  border-radius: 1.125rem;
   box-shadow: var(--shadow-card);
-  min-width: 260px;
-  max-width: 340px;
-  flex: 1 1 300px;
+  min-width: 16rem;
+  max-width: 22rem;
+  flex: 1 1 18rem;
   padding: 2rem 1.5rem;
   margin: 1rem 0;
   transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
@@ -148,11 +157,12 @@ html, body {
   box-sizing: border-box;
   overflow-wrap: break-word;
   opacity: 0;
-  transform: translateY(40px);
+  transform: translateY(2.5rem);
   animation: fadeInCard 0.7s cubic-bezier(.4,0,.2,1) forwards;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  font-size: 1rem;
 }
 @keyframes fadeInCard {
   to {
@@ -178,10 +188,10 @@ html, body {
 /* Micro Habit Challenge Styles */
 .micro-habit-section {
   width: 100%;
-  max-width: 700px;
+  max-width: 44rem;
   margin: 2rem auto 0 auto;
   background: var(--color-card);
-  border-radius: 18px;
+  border-radius: 1.125rem;
   box-shadow: var(--shadow-card);
   padding: 2rem 1.5rem;
   display: flex;
@@ -190,7 +200,7 @@ html, body {
   animation: fadeInCard 0.7s cubic-bezier(.4,0,.2,1) forwards;
 }
 .micro-habit-title {
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   font-weight: 700;
   color: var(--color-primary);
   margin-bottom: 0.7rem;
@@ -205,15 +215,18 @@ html, body {
   background: var(--color-primary);
   color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 0.7rem 1.2rem;
-  font-size: 1rem;
+  border-radius: 0.5rem;
+  padding: 0.9em 1.5em;
+  font-size: 1.1rem;
   font-family: inherit;
   cursor: pointer;
   transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
   box-shadow: 0 2px 8px 0 rgba(229,9,20,0.08);
   outline: none;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
+  min-width: 44px;
+  min-height: 44px;
+  touch-action: manipulation;
 }
 .micro-habit-btn:hover {
   background: var(--color-accent);
@@ -230,20 +243,21 @@ html, body {
 }
 .micro-habit-day {
   background: #181818;
-  border-radius: 12px;
+  border-radius: 0.75rem;
   box-shadow: 0 2px 12px 0 rgba(0,0,0,0.18);
   padding: 1.1rem 1rem 1.1rem 1.2rem;
-  min-width: 120px;
-  max-width: 160px;
-  flex: 1 1 120px;
+  min-width: 8.5rem;
+  max-width: 12rem;
+  flex: 1 1 8.5rem;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   position: relative;
   opacity: 0;
-  transform: translateY(40px);
+  transform: translateY(2.5rem);
   animation: fadeInCard 0.7s cubic-bezier(.4,0,.2,1) forwards;
   animation-delay: var(--delay, 0s);
+  font-size: 0.98rem;
 }
 .micro-habit-day.completed {
   background: linear-gradient(120deg, #222, #2c2c2c 80%, #e50914 100%);
@@ -261,6 +275,9 @@ html, body {
   border: none;
   cursor: pointer;
   transition: color var(--transition-fast), transform var(--transition-fast);
+  min-width: 2.2rem;
+  min-height: 2.2rem;
+  touch-action: manipulation;
 }
 .micro-habit-check.completed {
   color: #fff;
@@ -429,14 +446,18 @@ button, .button {
   background: var(--color-primary);
   color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 0.7rem 1.2rem;
-  font-size: 1rem;
+  border-radius: 0.5rem;
+  padding: 0.9em 1.5em;
+  font-size: 1.1rem;
   font-family: inherit;
   cursor: pointer;
   transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
   box-shadow: 0 2px 8px 0 rgba(229,9,20,0.08);
   outline: none;
+  margin-bottom: 0.5rem;
+  min-width: 44px;
+  min-height: 44px;
+  touch-action: manipulation;
 }
 button:hover, .button:hover {
   background: var(--color-accent);
@@ -445,6 +466,13 @@ button:hover, .button:hover {
 button:active, .button:active {
   background: #a00;
   transform: scale(0.98);
+}
+
+@media (hover: none) and (pointer: coarse) {
+  button:hover, .button:hover {
+    background: var(--color-primary);
+    transform: none;
+  }
 }
 
 .fade-in {
@@ -465,51 +493,61 @@ button:active, .button:active {
   border-radius: 8px;
 }
 
-@media (max-width: 900px) {
-  .container {
-    max-width: 100vw;
-    padding: 0 0.5rem;
-  }
-  .cards-row {
-    gap: 1rem;
-  }
-  .card {
-    min-width: 180px;
-    max-width: 90vw;
-    padding: 1.2rem 0.7rem;
-  }
-  .micro-habit-section {
-    max-width: 98vw;
-    padding: 1.2rem 0.7rem;
-  }
-  .micro-habit-timeline {
-    gap: 0.7rem;
-  }
+/* Fluid Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: inherit;
+  font-weight: 700;
+  margin: 0 0 0.5em 0;
+  line-height: 1.2;
 }
-@media (max-width: 600px) {
-  .card, .modal {
-    min-width: 90vw;
-    max-width: 98vw;
-    padding: 1.2rem 0.7rem;
-  }
-  .navbar {
-    flex-direction: column;
-    height: auto;
-    padding: 0.7rem 0.5rem;
-  }
-  .nav-links {
-    gap: 1rem;
-  }
-  .cards-row {
-    gap: 0.5rem;
-    padding: 0.5rem 0 0.5rem 0;
-  }
-  .micro-habit-timeline {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .micro-habit-day {
-    min-width: 90vw;
-    max-width: 98vw;
-  }
+h2 {
+  font-size: clamp(1.3rem, 2vw + 1rem, 2.2rem);
+}
+h3 {
+  font-size: clamp(1.1rem, 1.5vw + 1rem, 1.5rem);
+}
+p, label, textarea, input, button {
+  font-size: 1rem;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1280px) {
+  .container { max-width: 62rem; }
+  .micro-habit-section { max-width: 36rem; }
+}
+@media (max-width: 1024px) {
+  .container { max-width: 48rem; }
+  .micro-habit-section { max-width: 28rem; }
+  .cards-row { gap: 1.2rem; }
+}
+@media (max-width: 900px) {
+  .container { max-width: 100vw; padding: 0 0.7rem; }
+  .cards-row { gap: 1rem; }
+  .card { min-width: 12rem; max-width: 95vw; padding: 1.2rem 0.7rem; }
+  .micro-habit-section { max-width: 98vw; padding: 1.2rem 0.7rem; }
+  .micro-habit-timeline { gap: 0.7rem; }
+}
+@media (max-width: 768px) {
+  .container { max-width: 100vw; padding: 0 0.5rem; }
+  .cards-row { flex-direction: column; gap: 1.2rem; }
+  .card { min-width: 90vw; max-width: 98vw; }
+  .micro-habit-section { max-width: 99vw; }
+}
+@media (max-width: 640px) {
+  .container { padding: 0 0.3rem; }
+  .card, .modal { min-width: 96vw; max-width: 99vw; padding: 1rem 0.5rem; }
+  .micro-habit-section { padding: 1rem 0.5rem; }
+  .micro-habit-timeline { flex-direction: column; align-items: stretch; }
+  .micro-habit-day { min-width: 90vw; max-width: 98vw; }
+}
+@media (max-width: 480px) {
+  .container { padding: 0 0.1rem; }
+  .card, .modal { min-width: 99vw; max-width: 99vw; padding: 0.7rem 0.2rem; }
+  .micro-habit-section { padding: 0.7rem 0.2rem; }
+  .micro-habit-day { min-width: 98vw; max-width: 99vw; font-size: 0.95rem; }
+  button, .button, .micro-habit-btn { font-size: 1rem; padding: 0.8em 1.1em; }
+}
+@media (max-width: 375px) {
+  .card, .modal, .micro-habit-day { min-width: 100vw; max-width: 100vw; }
+  .container, .micro-habit-section { padding: 0; }
 }
