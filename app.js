@@ -38,6 +38,10 @@ const state = {
   writingDone: false,
   puzzleDone: false,
   journal: [],
+  todayPrompt: null,
+  todayTeaser: null,
+  writingInput: '',
+  puzzleInput: '',
 };
 
 // --- LocalStorage Keys ---
@@ -51,6 +55,10 @@ const LS_KEYS = {
   writingDone: 'ms_writing_done',
   puzzleDone: 'ms_puzzle_done',
   journal: 'ms_journal',
+  todayPrompt: 'ms_today_prompt',
+  todayTeaser: 'ms_today_teaser',
+  writingInput: 'ms_writing_input',
+  puzzleInput: 'ms_puzzle_input',
 };
 
 // --- Utility Functions ---
@@ -66,6 +74,10 @@ function saveState() {
   localStorage.setItem(LS_KEYS.writingDone, state.writingDone);
   localStorage.setItem(LS_KEYS.puzzleDone, state.puzzleDone);
   localStorage.setItem(LS_KEYS.journal, JSON.stringify(state.journal));
+  localStorage.setItem(LS_KEYS.todayPrompt, JSON.stringify(state.todayPrompt));
+  localStorage.setItem(LS_KEYS.todayTeaser, JSON.stringify(state.todayTeaser));
+  localStorage.setItem(LS_KEYS.writingInput, state.writingInput);
+  localStorage.setItem(LS_KEYS.puzzleInput, state.puzzleInput);
 }
 function loadState() {
   state.user = localStorage.getItem(LS_KEYS.user) || null;
@@ -79,6 +91,14 @@ function loadState() {
   try {
     state.journal = JSON.parse(localStorage.getItem(LS_KEYS.journal)) || [];
   } catch { state.journal = []; }
+  try {
+    state.todayPrompt = JSON.parse(localStorage.getItem(LS_KEYS.todayPrompt));
+  } catch { state.todayPrompt = null; }
+  try {
+    state.todayTeaser = JSON.parse(localStorage.getItem(LS_KEYS.todayTeaser));
+  } catch { state.todayTeaser = null; }
+  state.writingInput = localStorage.getItem(LS_KEYS.writingInput) || '';
+  state.puzzleInput = localStorage.getItem(LS_KEYS.puzzleInput) || '';
 }
 function playSound() {
   if (state.soundOn) {
@@ -95,6 +115,10 @@ function resetDaily() {
     state.puzzleDone = false;
     state.mood = null;
     state.lastActive = todayStr();
+    state.todayPrompt = randomFrom(WRITING_PROMPTS);
+    state.todayTeaser = randomFrom(BRAIN_TEASERS);
+    state.writingInput = '';
+    state.puzzleInput = '';
     saveState();
   }
 }
@@ -157,56 +181,122 @@ function renderSection(section) {
 // --- Dashboard ---
 function dashboardSection() {
   const sec = document.createElement('section');
-  sec.innerHTML = `
-    <h2 style="margin-bottom:1.5rem;">Hello, <span style="color:var(--color-primary)">${state.user}</span> 👋</h2>
-    <div class="cards-row">
-      <div class="card ${state.writingDone ? 'completed' : ''}" id="writing-card">
-        <h3>✍️ Writing Prompt</h3>
-        <p>${randomFrom(WRITING_PROMPTS)}</p>
-        <button class="complete-btn">${state.writingDone ? 'Completed' : 'Mark Complete'}</button>
-      </div>
-      <div class="card ${state.puzzleDone ? 'completed' : ''}" id="puzzle-card">
-        <h3>🧠 Brain Teaser</h3>
-        <p>${randomFrom(BRAIN_TEASERS).q}</p>
-        <button class="complete-btn">${state.puzzleDone ? 'Completed' : 'Mark Complete'}</button>
-      </div>
-      <div class="card" id="mood-card">
-        <h3>📊 Mood Tracker</h3>
-        <div class="mood-tracker">
-          ${MOOD_EMOJIS.map(e => `<span class="mood-emoji${state.mood===e?' selected':''}" data-emoji="${e}">${e}</span>`).join('')}
-        </div>
-      </div>
-      <div class="card" id="streak-card">
-        <h3>🔥 Daily Streak</h3>
-        <div class="progress-bar"><div class="progress-bar-inner" style="width:${Math.min(state.streak, 7)*14.28}%"></div></div>
-        <div style="font-size:1.2rem;">${state.streak} day${state.streak===1?'':'s'} in a row!</div>
-      </div>
-    </div>
-    <div class="quote" id="quote-block" style="display:${state.showQuote?'block':'none'}"></div>
+  sec.className = 'container';
+  // Writing Prompt Card
+  let writingCard = document.createElement('div');
+  writingCard.className = 'card' + (state.writingDone ? ' completed' : '');
+  writingCard.id = 'writing-card';
+  writingCard.innerHTML = `
+    <h3>✍️ Writing Prompt</h3>
+    <p>${state.todayPrompt || randomFrom(WRITING_PROMPTS)}</p>
+    <textarea id="writing-input" placeholder="Write your response..." rows="3" maxlength="400" style="width:100%;padding:0.7rem;font-size:1rem;border-radius:8px;border:none;resize:vertical;" ${state.writingDone ? 'disabled' : ''}>${state.writingInput || ''}</textarea>
+    <button class="complete-btn" ${state.writingDone ? 'disabled' : ''}>${state.writingDone ? 'Completed' : 'Submit'}</button>
+    <div class="writing-output" style="margin-top:1rem;min-height:1.5em;"></div>
   `;
+  // Brain Teaser Card
+  let puzzleCard = document.createElement('div');
+  puzzleCard.className = 'card' + (state.puzzleDone ? ' completed' : '');
+  puzzleCard.id = 'puzzle-card';
+  puzzleCard.innerHTML = `
+    <h3>🧠 Brain Teaser</h3>
+    <p>${state.todayTeaser ? state.todayTeaser.q : randomFrom(BRAIN_TEASERS).q}</p>
+    <input id="puzzle-input" type="text" placeholder="Your answer..." maxlength="100" style="width:100%;padding:0.7rem;font-size:1rem;border-radius:8px;border:none;" value="${state.puzzleInput || ''}" ${state.puzzleDone ? 'disabled' : ''} />
+    <button class="complete-btn" ${state.puzzleDone ? 'disabled' : ''}>${state.puzzleDone ? 'Completed' : 'Check'}</button>
+    <div class="puzzle-output" style="margin-top:1rem;min-height:1.5em;"></div>
+  `;
+  // Mood Card
+  let moodCard = document.createElement('div');
+  moodCard.className = 'card';
+  moodCard.id = 'mood-card';
+  moodCard.innerHTML = `
+    <h3>📊 Mood Tracker</h3>
+    <div class="mood-tracker">
+      ${MOOD_EMOJIS.map(e => `<span class="mood-emoji${state.mood===e?' selected':''}" data-emoji="${e}">${e}</span>`).join('')}
+    </div>
+  `;
+  // Streak Card
+  let streakCard = document.createElement('div');
+  streakCard.className = 'card';
+  streakCard.id = 'streak-card';
+  streakCard.innerHTML = `
+    <h3>🔥 Daily Streak</h3>
+    <div class="progress-bar"><div class="progress-bar-inner" style="width:${Math.min(state.streak, 7)*14.28}%"></div></div>
+    <div style="font-size:1.2rem;">${state.streak} day${state.streak===1?'':'s'} in a row!</div>
+  `;
+  // Cards Row
+  let cardsRow = document.createElement('div');
+  cardsRow.className = 'cards-row';
+  cardsRow.append(writingCard, puzzleCard, moodCard, streakCard);
+  sec.appendChild(cardsRow);
+  // Quote
+  let quoteDiv = document.createElement('div');
+  quoteDiv.className = 'quote';
+  quoteDiv.id = 'quote-block';
+  quoteDiv.style.display = state.showQuote ? 'block' : 'none';
+  sec.appendChild(quoteDiv);
   setTimeout(() => animateQuote(), 300);
-  // Writing complete
-  $('#writing-card .complete-btn', sec).onclick = () => {
-    if (!state.writingDone) {
+  // Writing prompt logic
+  const writingInput = writingCard.querySelector('#writing-input');
+  const writingBtn = writingCard.querySelector('.complete-btn');
+  const writingOutput = writingCard.querySelector('.writing-output');
+  writingInput.addEventListener('input', e => {
+    state.writingInput = e.target.value;
+    saveState();
+  });
+  writingBtn.onclick = () => {
+    if (!state.writingDone && writingInput.value.trim().length > 0) {
       state.writingDone = true;
+      state.writingInput = writingInput.value.trim();
+      writingOutput.innerHTML = `<span style='color:var(--color-primary);opacity:0;transition:opacity 0.7s;'>${state.writingInput}</span>`;
+      setTimeout(() => writingOutput.querySelector('span').style.opacity = 1, 50);
       checkStreak();
       playSound();
       saveState();
-      renderSection('dashboard');
+      setTimeout(() => renderSection('dashboard'), 1200);
+    } else if (!state.writingDone) {
+      writingInput.focus();
+      writingInput.style.boxShadow = '0 0 0 2px var(--color-primary)';
+      setTimeout(() => writingInput.style.boxShadow = '', 800);
     }
   };
-  // Puzzle complete
-  $('#puzzle-card .complete-btn', sec).onclick = () => {
-    if (!state.puzzleDone) {
-      state.puzzleDone = true;
-      checkStreak();
-      playSound();
-      saveState();
-      renderSection('dashboard');
+  if (state.writingDone && state.writingInput) {
+    writingOutput.innerHTML = `<span style='color:var(--color-primary);opacity:1;'>${state.writingInput}</span>`;
+  }
+  // Puzzle logic
+  const puzzleInput = puzzleCard.querySelector('#puzzle-input');
+  const puzzleBtn = puzzleCard.querySelector('.complete-btn');
+  const puzzleOutput = puzzleCard.querySelector('.puzzle-output');
+  puzzleInput.addEventListener('input', e => {
+    state.puzzleInput = e.target.value;
+    saveState();
+  });
+  puzzleBtn.onclick = () => {
+    if (!state.puzzleDone && puzzleInput.value.trim().length > 0) {
+      const answer = (state.todayTeaser ? state.todayTeaser.a : '').toLowerCase();
+      const userAns = puzzleInput.value.trim().toLowerCase();
+      if (userAns === answer) {
+        state.puzzleDone = true;
+        puzzleOutput.innerHTML = `<span style='color:var(--color-primary);opacity:0;transition:opacity 0.7s;'>Correct! 🎉</span>`;
+        setTimeout(() => puzzleOutput.querySelector('span').style.opacity = 1, 50);
+        checkStreak();
+        playSound();
+        saveState();
+        setTimeout(() => renderSection('dashboard'), 1200);
+      } else {
+        puzzleOutput.innerHTML = `<span style='color:#e50914;opacity:0;transition:opacity 0.7s;'>Try again!</span>`;
+        setTimeout(() => puzzleOutput.querySelector('span').style.opacity = 1, 50);
+      }
+    } else if (!state.puzzleDone) {
+      puzzleInput.focus();
+      puzzleInput.style.boxShadow = '0 0 0 2px var(--color-primary)';
+      setTimeout(() => puzzleInput.style.boxShadow = '', 800);
     }
   };
+  if (state.puzzleDone) {
+    puzzleOutput.innerHTML = `<span style='color:var(--color-primary);opacity:1;'>${state.todayTeaser ? state.todayTeaser.a : ''}</span>`;
+  }
   // Mood tracker
-  $$('.mood-emoji', sec).forEach(emoji => {
+  moodCard.querySelectorAll('.mood-emoji').forEach(emoji => {
     emoji.onclick = () => {
       state.mood = emoji.dataset.emoji;
       playSound();
