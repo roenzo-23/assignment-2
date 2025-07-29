@@ -26,6 +26,23 @@ const QUOTES = [
   "Motivation is what gets you started. Habit is what keeps you going. – Jim Ryun"
 ];
 const MOOD_EMOJIS = ["😃", "🙂", "😐", "😕", "😢"];
+const MICRO_HABITS = [
+  "Drink a full glass of water after waking up.",
+  "Write down one thing you're grateful for.",
+  "Take a 5-minute mindful breathing break.",
+  "Do 10 push-ups or stretches.",
+  "Read one page of a book.",
+  "Compliment someone or yourself.",
+  "Go for a 5-minute walk.",
+  "Organize one small thing on your desk.",
+  "Write a single sentence in your journal.",
+  "Plan tomorrow's top priority.",
+  "Smile at yourself in the mirror.",
+  "Unplug from screens for 10 minutes.",
+  "Tidy up your workspace.",
+  "Send a thank you message to someone.",
+  "List 3 things you did well today."
+];
 
 // --- State ---
 const state = {
@@ -208,11 +225,21 @@ function dashboardSection() {
       <div id="teaser-user-output" style="margin-top:1rem;"></div>
     </div>
   `;
+  // Micro Habit Challenge Section
+  let microHabitSection = document.createElement('div');
+  microHabitSection.className = 'micro-habit-section';
+  microHabitSection.innerHTML = `
+    <div class="micro-habit-title">Micro Habit Challenge</div>
+    <div class="micro-habit-desc">Build momentum with tiny daily actions! Start a 7-day micro habit challenge to boost your creativity, health, and productivity. Each day, complete a simple, positive action. Mark each day as you go!</div>
+    <button class="micro-habit-btn" id="start-micro-habit-btn">Start Challenge</button>
+    <div class="micro-habit-timeline" id="micro-habit-timeline"></div>
+  `;
   // Cards Row
   let cardsRow = document.createElement('div');
   cardsRow.className = 'cards-row';
   cardsRow.append(promptCard, teaserCard);
   sec.appendChild(cardsRow);
+  sec.appendChild(microHabitSection);
 
   // Prompt Writing Logic
   const promptBtn = promptCard.querySelector('#generate-prompt-btn');
@@ -270,6 +297,42 @@ function dashboardSection() {
       setTimeout(() => teaserInput.style.boxShadow = '', 800);
     }
   };
+
+  // Micro Habit Challenge Logic
+  const startHabitBtn = microHabitSection.querySelector('#start-micro-habit-btn');
+  const habitTimeline = microHabitSection.querySelector('#micro-habit-timeline');
+  let challenge = [];
+  let completedDays = Array(7).fill(false);
+  startHabitBtn.onclick = () => {
+    // Generate 7 unique random habits
+    challenge = [];
+    let used = new Set();
+    while (challenge.length < 7) {
+      let idx = Math.floor(Math.random()*MICRO_HABITS.length);
+      if (!used.has(idx)) {
+        used.add(idx);
+        challenge.push(MICRO_HABITS[idx]);
+      }
+    }
+    completedDays = Array(7).fill(false);
+    renderHabitTimeline();
+  };
+  function renderHabitTimeline() {
+    habitTimeline.innerHTML = '';
+    challenge.forEach((habit, i) => {
+      const day = document.createElement('div');
+      day.className = 'micro-habit-day';
+      day.style.setProperty('--delay', `${i*0.08}s`);
+      if (completedDays[i]) day.classList.add('completed');
+      day.innerHTML = `<div style="font-weight:600;">Day ${i+1}</div><div style="margin:0.5rem 0 0.2rem 0;">${habit}</div><button class="micro-habit-check${completedDays[i] ? ' completed' : ''}" title="Mark as done">${completedDays[i] ? '✔️' : '○'}</button>`;
+      const checkBtn = day.querySelector('.micro-habit-check');
+      checkBtn.onclick = () => {
+        completedDays[i] = !completedDays[i];
+        renderHabitTimeline();
+      };
+      habitTimeline.appendChild(day);
+    });
+  }
 
   return sec;
 }
