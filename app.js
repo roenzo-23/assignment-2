@@ -182,128 +182,95 @@ function renderSection(section) {
 function dashboardSection() {
   const sec = document.createElement('section');
   sec.className = 'container';
-  // Writing Prompt Card
-  let writingCard = document.createElement('div');
-  writingCard.className = 'card' + (state.writingDone ? ' completed' : '');
-  writingCard.id = 'writing-card';
-  writingCard.innerHTML = `
-    <h3>✍️ Writing Prompt</h3>
-    <p>${state.todayPrompt || randomFrom(WRITING_PROMPTS)}</p>
-    <textarea id="writing-input" placeholder="Write your response..." rows="3" maxlength="400" style="width:100%;padding:0.7rem;font-size:1rem;border-radius:8px;border:none;resize:vertical;" ${state.writingDone ? 'disabled' : ''}>${state.writingInput || ''}</textarea>
-    <button class="complete-btn" ${state.writingDone ? 'disabled' : ''}>${state.writingDone ? 'Completed' : 'Submit'}</button>
-    <div class="writing-output" style="margin-top:1rem;min-height:1.5em;"></div>
-  `;
-  // Brain Teaser Card
-  let puzzleCard = document.createElement('div');
-  puzzleCard.className = 'card' + (state.puzzleDone ? ' completed' : '');
-  puzzleCard.id = 'puzzle-card';
-  puzzleCard.innerHTML = `
-    <h3>🧠 Brain Teaser</h3>
-    <p>${state.todayTeaser ? state.todayTeaser.q : randomFrom(BRAIN_TEASERS).q}</p>
-    <input id="puzzle-input" type="text" placeholder="Your answer..." maxlength="100" style="width:100%;padding:0.7rem;font-size:1rem;border-radius:8px;border:none;" value="${state.puzzleInput || ''}" ${state.puzzleDone ? 'disabled' : ''} />
-    <button class="complete-btn" ${state.puzzleDone ? 'disabled' : ''}>${state.puzzleDone ? 'Completed' : 'Check'}</button>
-    <div class="puzzle-output" style="margin-top:1rem;min-height:1.5em;"></div>
-  `;
-  // Mood Card
-  let moodCard = document.createElement('div');
-  moodCard.className = 'card';
-  moodCard.id = 'mood-card';
-  moodCard.innerHTML = `
-    <h3>📊 Mood Tracker</h3>
-    <div class="mood-tracker">
-      ${MOOD_EMOJIS.map(e => `<span class="mood-emoji${state.mood===e?' selected':''}" data-emoji="${e}">${e}</span>`).join('')}
+  // Prompt Writing Card
+  let promptCard = document.createElement('div');
+  promptCard.className = 'card';
+  promptCard.innerHTML = `
+    <h3>✍️ Prompt Writing</h3>
+    <button class="button" id="generate-prompt-btn">Generate Prompt</button>
+    <div id="prompt-output" style="margin-top:1.2rem;"></div>
+    <div id="prompt-input-block" style="margin-top:1.2rem;display:none;">
+      <textarea id="prompt-input" rows="3" maxlength="400" placeholder="Write your response..." style="width:100%;padding:0.7rem;font-size:1rem;border-radius:8px;border:none;resize:vertical;"></textarea>
+      <button class="button" id="submit-prompt-btn" style="margin-top:0.7rem;">Submit</button>
+      <div id="prompt-user-output" style="margin-top:1rem;"></div>
     </div>
   `;
-  // Streak Card
-  let streakCard = document.createElement('div');
-  streakCard.className = 'card';
-  streakCard.id = 'streak-card';
-  streakCard.innerHTML = `
-    <h3>🔥 Daily Streak</h3>
-    <div class="progress-bar"><div class="progress-bar-inner" style="width:${Math.min(state.streak, 7)*14.28}%"></div></div>
-    <div style="font-size:1.2rem;">${state.streak} day${state.streak===1?'':'s'} in a row!</div>
+  // Brain Teaser Card
+  let teaserCard = document.createElement('div');
+  teaserCard.className = 'card';
+  teaserCard.innerHTML = `
+    <h3>🧠 Brain Teaser</h3>
+    <button class="button" id="generate-teaser-btn">Generate Teaser</button>
+    <div id="teaser-output" style="margin-top:1.2rem;"></div>
+    <div id="teaser-input-block" style="margin-top:1.2rem;display:none;">
+      <input id="teaser-input" type="text" maxlength="100" placeholder="Your answer..." style="width:100%;padding:0.7rem;font-size:1rem;border-radius:8px;border:none;" />
+      <button class="button" id="submit-teaser-btn" style="margin-top:0.7rem;">Check</button>
+      <div id="teaser-user-output" style="margin-top:1rem;"></div>
+    </div>
   `;
   // Cards Row
   let cardsRow = document.createElement('div');
   cardsRow.className = 'cards-row';
-  cardsRow.append(writingCard, puzzleCard, moodCard, streakCard);
+  cardsRow.append(promptCard, teaserCard);
   sec.appendChild(cardsRow);
-  // Quote
-  let quoteDiv = document.createElement('div');
-  quoteDiv.className = 'quote';
-  quoteDiv.id = 'quote-block';
-  quoteDiv.style.display = state.showQuote ? 'block' : 'none';
-  sec.appendChild(quoteDiv);
-  setTimeout(() => animateQuote(), 300);
-  // Writing prompt logic
-  const writingInput = writingCard.querySelector('#writing-input');
-  const writingBtn = writingCard.querySelector('.complete-btn');
-  const writingOutput = writingCard.querySelector('.writing-output');
-  writingInput.addEventListener('input', e => {
-    state.writingInput = e.target.value;
-    saveState();
-  });
-  writingBtn.onclick = () => {
-    if (!state.writingDone && writingInput.value.trim().length > 0) {
-      state.writingDone = true;
-      state.writingInput = writingInput.value.trim();
-      writingOutput.innerHTML = `<span style='color:var(--color-primary);opacity:0;transition:opacity 0.7s;'>${state.writingInput}</span>`;
-      setTimeout(() => writingOutput.querySelector('span').style.opacity = 1, 50);
-      checkStreak();
-      playSound();
-      saveState();
-      setTimeout(() => renderSection('dashboard'), 1200);
-    } else if (!state.writingDone) {
-      writingInput.focus();
-      writingInput.style.boxShadow = '0 0 0 2px var(--color-primary)';
-      setTimeout(() => writingInput.style.boxShadow = '', 800);
+
+  // Prompt Writing Logic
+  const promptBtn = promptCard.querySelector('#generate-prompt-btn');
+  const promptOutput = promptCard.querySelector('#prompt-output');
+  const promptInputBlock = promptCard.querySelector('#prompt-input-block');
+  const promptInput = promptCard.querySelector('#prompt-input');
+  const promptSubmitBtn = promptCard.querySelector('#submit-prompt-btn');
+  const promptUserOutput = promptCard.querySelector('#prompt-user-output');
+  let currentPrompt = '';
+  promptBtn.onclick = () => {
+    currentPrompt = WRITING_PROMPTS[Math.floor(Math.random()*WRITING_PROMPTS.length)];
+    promptOutput.innerHTML = `<div class='fade-in' style='font-size:1.1rem;color:var(--color-primary);'>${currentPrompt}</div>`;
+    promptInputBlock.style.display = 'block';
+    promptInput.value = '';
+    promptUserOutput.innerHTML = '';
+  };
+  promptSubmitBtn.onclick = () => {
+    if (promptInput.value.trim().length > 0) {
+      promptUserOutput.innerHTML = `<div class='fade-in' style='color:var(--color-primary);'>${promptInput.value.trim()}</div>`;
+      promptInput.value = '';
+    } else {
+      promptInput.focus();
+      promptInput.style.boxShadow = '0 0 0 2px var(--color-primary)';
+      setTimeout(() => promptInput.style.boxShadow = '', 800);
     }
   };
-  if (state.writingDone && state.writingInput) {
-    writingOutput.innerHTML = `<span style='color:var(--color-primary);opacity:1;'>${state.writingInput}</span>`;
-  }
-  // Puzzle logic
-  const puzzleInput = puzzleCard.querySelector('#puzzle-input');
-  const puzzleBtn = puzzleCard.querySelector('.complete-btn');
-  const puzzleOutput = puzzleCard.querySelector('.puzzle-output');
-  puzzleInput.addEventListener('input', e => {
-    state.puzzleInput = e.target.value;
-    saveState();
-  });
-  puzzleBtn.onclick = () => {
-    if (!state.puzzleDone && puzzleInput.value.trim().length > 0) {
-      const answer = (state.todayTeaser ? state.todayTeaser.a : '').toLowerCase();
-      const userAns = puzzleInput.value.trim().toLowerCase();
-      if (userAns === answer) {
-        state.puzzleDone = true;
-        puzzleOutput.innerHTML = `<span style='color:var(--color-primary);opacity:0;transition:opacity 0.7s;'>Correct! 🎉</span>`;
-        setTimeout(() => puzzleOutput.querySelector('span').style.opacity = 1, 50);
-        checkStreak();
-        playSound();
-        saveState();
-        setTimeout(() => renderSection('dashboard'), 1200);
+
+  // Brain Teaser Logic
+  const teaserBtn = teaserCard.querySelector('#generate-teaser-btn');
+  const teaserOutput = teaserCard.querySelector('#teaser-output');
+  const teaserInputBlock = teaserCard.querySelector('#teaser-input-block');
+  const teaserInput = teaserCard.querySelector('#teaser-input');
+  const teaserSubmitBtn = teaserCard.querySelector('#submit-teaser-btn');
+  const teaserUserOutput = teaserCard.querySelector('#teaser-user-output');
+  let currentTeaser = null;
+  teaserBtn.onclick = () => {
+    currentTeaser = BRAIN_TEASERS[Math.floor(Math.random()*BRAIN_TEASERS.length)];
+    teaserOutput.innerHTML = `<div class='fade-in' style='font-size:1.1rem;color:var(--color-primary);'>${currentTeaser.q}</div>`;
+    teaserInputBlock.style.display = 'block';
+    teaserInput.value = '';
+    teaserUserOutput.innerHTML = '';
+  };
+  teaserSubmitBtn.onclick = () => {
+    if (teaserInput.value.trim().length > 0) {
+      const userAns = teaserInput.value.trim().toLowerCase();
+      const correct = currentTeaser && userAns === currentTeaser.a.toLowerCase();
+      if (correct) {
+        teaserUserOutput.innerHTML = `<div class='fade-in' style='color:var(--color-primary);'>Correct! 🎉 (${currentTeaser.a})</div>`;
       } else {
-        puzzleOutput.innerHTML = `<span style='color:#e50914;opacity:0;transition:opacity 0.7s;'>Try again!</span>`;
-        setTimeout(() => puzzleOutput.querySelector('span').style.opacity = 1, 50);
+        teaserUserOutput.innerHTML = `<div class='fade-in' style='color:#e50914;'>Try again!</div>`;
       }
-    } else if (!state.puzzleDone) {
-      puzzleInput.focus();
-      puzzleInput.style.boxShadow = '0 0 0 2px var(--color-primary)';
-      setTimeout(() => puzzleInput.style.boxShadow = '', 800);
+    } else {
+      teaserInput.focus();
+      teaserInput.style.boxShadow = '0 0 0 2px var(--color-primary)';
+      setTimeout(() => teaserInput.style.boxShadow = '', 800);
     }
   };
-  if (state.puzzleDone) {
-    puzzleOutput.innerHTML = `<span style='color:var(--color-primary);opacity:1;'>${state.todayTeaser ? state.todayTeaser.a : ''}</span>`;
-  }
-  // Mood tracker
-  moodCard.querySelectorAll('.mood-emoji').forEach(emoji => {
-    emoji.onclick = () => {
-      state.mood = emoji.dataset.emoji;
-      playSound();
-      saveState();
-      renderSection('dashboard');
-    };
-  });
+
   return sec;
 }
 function randomFrom(arr) {
