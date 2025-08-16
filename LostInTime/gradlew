@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# Gradle startup script for Unix
+# This is a simplified version that should work
+
+# Find java
+if [ -n "$JAVA_HOME" ]; then
+    JAVACMD="$JAVA_HOME/bin/java"
+else
+    JAVACMD="java"
+fi
+
+# Check if java exists
+if ! command -v "$JAVACMD" >/dev/null 2>&1; then
+    echo "Error: JAVA_HOME is not set and no 'java' command could be found in your PATH."
+    exit 1
+fi
+
+# Set classpath
+CLASSPATH="$APP_HOME/gradle/wrapper/gradle-wrapper.jar"
+
+# Execute gradle
+exec "$JAVACMD" -cp "$CLASSPATH" org.gradle.wrapper.GradleWrapperMain "$@"

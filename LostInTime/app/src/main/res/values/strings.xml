@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Lost in Time</string>
+    <string name="start_game">Start Game</string>
+    <string name="continue_game">Continue</string>
+    <string name="level">Level</string>
+    <string name="time_power">Time Power</string>
+    <string name="pause">Pause</string>
+    <string name="reverse">Reverse</string>
+    <string name="slow">Slow</string>
+    <string name="level_complete">Level Complete!</string>
+    <string name="next_level">Next Level</string>
+    <string name="game_over">Game Over</string>
+    <string name="retry">Retry</string>
+    <string name="main_menu">Main Menu</string>
+    <string name="controls">Controls</string>
+    <string name="left_right">Left/Right: Move</string>
+    <string name="jump">Jump: Jump</string>
+    <string name="time_power_cycle">Time Power: Cycle Powers</string>
+    <string name="activate_power">Tap: Activate Power</string>
+    <string name="controls_text">Left/Right: Move\nJump: Jump\nTime Power: Cycle Powers\nTap: Activate Power</string>
+</resources>

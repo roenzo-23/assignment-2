@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color"
+    tools:context=".GameActivity">
+
+    <com.example.lostintime.GameView
+        android:id="@+id/gameView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="120dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/controlsLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/controlsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:orientation="horizontal"
+        android:background="@color/ui_background"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <Button
+            android:id="@+id/leftButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="←"
+            android:textSize="24sp"
+            android:background="@color/button_color"
+            android:textColor="@color/ui_text"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/jumpButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/jump"
+            android:textSize="18sp"
+            android:background="@color/button_color"
+            android:textColor="@color/ui_text"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/rightButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="→"
+            android:textSize="24sp"
+            android:background="@color/button_color"
+            android:textColor="@color/ui_text"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/timePowerButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.5"
+            android:text="@string/time_power"
+            android:textSize="16sp"
+            android:background="@color/button_color"
+            android:textColor="@color/ui_text"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/activatePowerButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="⚡"
+            android:textSize="24sp"
+            android:background="@color/button_color"
+            android:textColor="@color/ui_text" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/levelText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/level"
+        android:textSize="20sp"
+        android:textColor="@color/ui_text"
+        android:background="@color/ui_background"
+        android:padding="8dp"
+        android:layout_margin="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/timePowerText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pause"
+        android:textSize="18sp"
+        android:textColor="@color/ui_text"
+        android:background="@color/ui_background"
+        android:padding="8dp"
+        android:layout_margin="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
