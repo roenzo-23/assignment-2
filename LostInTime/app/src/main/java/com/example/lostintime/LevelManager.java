@@ -12,23 +12,23 @@ public class LevelManager {
         
         switch (level) {
             case 1:
-                loadLevel1(objects, traps, portal);
+                portal = loadLevel1(objects, traps);
                 break;
             case 2:
-                loadLevel2(objects, traps, portal);
+                portal = loadLevel2(objects, traps);
                 break;
             case 3:
-                loadLevel3(objects, traps, portal);
+                portal = loadLevel3(objects, traps);
                 break;
             default:
-                loadLevel1(objects, traps, portal);
+                portal = loadLevel1(objects, traps);
                 break;
         }
         
         gameView.setLevelData(objects, traps, portal);
     }
     
-    private void loadLevel1(List<GameObject> objects, List<GameObject> traps, Portal portal) {
+    private Portal loadLevel1(List<GameObject> objects, List<GameObject> traps) {
         // Level 1: Basic movement and portal
         // Ground platform
         objects.add(new Platform(0, 800, 1200, 100));
@@ -39,10 +39,10 @@ public class LevelManager {
         objects.add(new Platform(700, 450, 100, 20));
         
         // Portal at the end
-        portal = new Portal(1000, 700);
+        return new Portal(1000, 700);
     }
     
-    private void loadLevel2(List<GameObject> objects, List<GameObject> traps, Portal portal) {
+    private Portal loadLevel2(List<GameObject> objects, List<GameObject> traps) {
         // Level 2: Introduce Pause Time with moving traps
         // Ground platform
         objects.add(new Platform(0, 800, 1200, 100));
@@ -56,10 +56,10 @@ public class LevelManager {
         traps.add(new MovingTrap(800, 650, 50, 50, 800, 650, 1000, 650));
         
         // Portal at the end
-        portal = new Portal(1000, 700);
+        return new Portal(1000, 700);
     }
     
-    private void loadLevel3(List<GameObject> objects, List<GameObject> traps, Portal portal) {
+    private Portal loadLevel3(List<GameObject> objects, List<GameObject> traps) {
         // Level 3: Combine Pause + Reverse with complex obstacles
         // Ground platform
         objects.add(new Platform(0, 800, 1200, 100));
@@ -79,6 +79,6 @@ public class LevelManager {
         traps.add(new Trap(700, 750, 30, 30));
         
         // Portal at the end
-        portal = new Portal(1000, 700);
+        return new Portal(1000, 700);
     }
 }
