@@ -63,7 +63,7 @@
         android:id="@+id/controlsText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/left_right\n@string/jump\n@string/time_power_cycle\n@string/activate_power"
+        android:text="@string/controls_text"
         android:textSize="16sp"
         android:textColor="@color/ui_text"
         android:gravity="center"

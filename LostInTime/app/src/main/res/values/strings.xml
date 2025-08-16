@@ -17,4 +17,5 @@
     <string name="jump">Jump: Jump</string>
     <string name="time_power_cycle">Time Power: Cycle Powers</string>
     <string name="activate_power">Tap: Activate Power</string>
+    <string name="controls_text">Left/Right: Move\nJump: Jump\nTime Power: Cycle Powers\nTap: Activate Power</string>
 </resources>
